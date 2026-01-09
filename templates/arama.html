@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Arama - StudyFlow{% endblock %}
+
+{% block content %}
+<h4 class="mb-4"><i class="bi bi-search me-2"></i>Arama</h4>
+
+<div class="card">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('arama_sonuc') }}">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="tip" class="form-label">Arama Tipi</label>
+                    <select class="form-select" id="tip" name="tip">
+                        <option value="alan">Çalışma Alanı</option>
+                        <option value="rezervasyon">Rezervasyon</option>
+                        <option value="kullanici">Kullanıcı</option>
+                    </select>
+                </div>
+                <div class="col-md-8">
+                    <label for="q" class="form-label">Arama Terimi</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="q" name="q" 
+                               placeholder="Ara..." required>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i> Ara
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

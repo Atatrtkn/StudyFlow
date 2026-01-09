@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}Arama Sonuçları - StudyFlow{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-search me-2"></i>Arama Sonuçları</h4>
+    <a href="{{ url_for('arama') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Yeni Arama
+    </a>
+</div>
+
+<p class="text-muted mb-3">
+    "{{ sorgu }}" için {{ sonuclar|length }} sonuç bulundu
+</p>
+
+{% if sonuclar %}
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            {% if arama_tipi == 'alan' %}
+            <thead>
+                <tr>
+                    <th>Alan Adı</th>
+                    <th>Tür</th>
+                    <th>Konum</th>
+                    <th>Kapasite</th>
+                    <th>Durum</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in sonuclar %}
+                <tr>
+                    <td><strong>{{ s.alan_adi }}</strong></td>
+                    <td>{{ s.tur_adi }}</td>
+                    <td>{{ s.konum }}</td>
+                    <td>{{ s.kapasite }} kişi</td>
+                    <td>
+                        {% if s.aktif %}
+                        <span class="badge bg-success">Aktif</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Pasif</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            
+            {% elif arama_tipi == 'rezervasyon' %}
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Kullanıcı</th>
+                    <th>Alan</th>
+                    <th>Tarih</th>
+                    <th>Durum</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in sonuclar %}
+                <tr>
+                    <td>#{{ s.rezervasyon_id }}</td>
+                    <td>{{ s.kullanici_adi }}</td>
+                    <td>{{ s.alan_adi }}</td>
+                    <td>{{ s.baslangic_zamani.strftime('%d.%m.%Y %H:%M') }}</td>
+                    <td>
+                        <span class="badge bg-{{ 'success' if s.durum == 'aktif' else 'danger' if s.durum == 'iptal' else 'secondary' }}">
+                            {{ s.durum|capitalize }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            
+            {% elif arama_tipi == 'kullanici' %}
+            <thead>
+                <tr>
+                    <th>Öğrenci No</th>
+                    <th>Ad Soyad</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in sonuclar %}
+                <tr>
+                    <td><strong>{{ s.ogrenci_no }}</strong></td>
+                    <td>{{ s.ad }} {{ s.soyad }}</td>
+                    <td>{{ s.email }}</td>
+                    <td>
+                        <span class="badge bg-{{ 'warning' if s.rol == 'admin' else 'info' }}">
+                            {{ s.rol|capitalize }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            {% endif %}
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-search text-muted" style="font-size: 4rem;"></i>
+        <h5 class="mt-3 text-muted">Sonuç bulunamadı</h5>
+        <p class="text-muted">Farklı bir arama terimi deneyin.</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

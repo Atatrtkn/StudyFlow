@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}StudyFlow{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #7c3aed;
+            --sidebar-width: 250px;
+            --bg-main: #f8fafc;
+            --bg-sidebar: #ffffff;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+        
+        body.dark-mode {
+            --bg-main: #0f172a;
+            --bg-sidebar: #1e293b;
+            --bg-card: #1e293b;
+            --bg-input: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+        
+        * {
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+        }
+        
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            height: 56px;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            width: var(--sidebar-width);
+            height: calc(100vh - 56px);
+            background: var(--bg-sidebar);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            overflow-y: auto;
+            z-index: 1020;
+            padding: 1rem 0;
+            border-right: 1px solid var(--border-color);
+        }
+        .sidebar .nav-link {
+            color: var(--text-muted);
+            padding: 0.7rem 1.25rem;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            border-left: 3px solid transparent;
+        }
+        .sidebar .nav-link:hover {
+            background-color: rgba(79, 70, 229, 0.1);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+        .sidebar .nav-link.active {
+            background: linear-gradient(90deg, rgba(79, 70, 229, 0.15), transparent);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            font-weight: 600;
+        }
+        .sidebar .nav-link i {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+        .sidebar-section {
+            padding: 0.75rem 1.25rem 0.5rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .sidebar-section:first-child {
+            padding-top: 0;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            margin-top: 56px;
+            padding: 1.5rem;
+            min-height: calc(100vh - 56px);
+        }
+        
+        /* Cards */
+        .card {
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border-radius: 0.5rem;
+        }
+        .card-header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            padding: 0.875rem 1rem;
+            color: var(--text-main);
+        }
+        .card-body {
+            background: var(--bg-card);
+            color: var(--text-main);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #4338ca, #6d28d9);
+        }
+        
+        .stat-card {
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+        .stat-card .card-body {
+            background: var(--bg-card);
+        }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+        
+        /* Tables */
+        .table {
+            color: var(--text-main);
+            --bs-table-bg: var(--bg-card);
+            --bs-table-striped-bg: var(--bg-card);
+            --bs-table-hover-bg: rgba(79, 70, 229, 0.05);
+        }
+        .table th {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-color: var(--border-color);
+            background: var(--bg-card);
+        }
+        .table td {
+            border-color: var(--border-color);
+            color: var(--text-main);
+            background: var(--bg-card);
+        }
+        .table-hover tbody tr:hover td {
+            background: rgba(79, 70, 229, 0.05);
+        }
+        
+        .badge-aktif { background-color: #22c55e; }
+        .badge-iptal { background-color: #ef4444; }
+        .badge-tamamlandi { background-color: #3b82f6; }
+        
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+        
+        /* Forms */
+        .form-control, .form-select {
+            background-color: var(--bg-input);
+            border-color: var(--border-color);
+            color: var(--text-main);
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-input);
+            border-color: var(--primary-color);
+            color: var(--text-main);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
+        .form-label {
+            color: var(--text-main);
+        }
+        .input-group-text {
+            background-color: var(--bg-input);
+            border-color: var(--border-color);
+            color: var(--text-muted);
+        }
+        
+        .alert {
+            border: none;
+        }
+        
+        /* Dropdown */
+        .dropdown-menu {
+            background: var(--bg-card);
+            border-color: var(--border-color);
+        }
+        .dropdown-item {
+            color: var(--text-main);
+        }
+        .dropdown-item:hover {
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--text-main);
+        }
+        
+        /* Settings button in navbar */
+        .btn-settings-nav {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .btn-settings-nav:hover {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        /* Settings Modal */
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+        }
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+        }
+        .modal-title {
+            color: var(--text-main);
+        }
+        .btn-close {
+            filter: var(--btn-close-filter, none);
+        }
+        body.dark-mode .btn-close {
+            filter: invert(1);
+        }
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-input);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+        .setting-item:last-child {
+            margin-bottom: 0;
+        }
+        .setting-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-main);
+        }
+        .setting-label i {
+            font-size: 1.25rem;
+            color: var(--primary-color);
+        }
+        .form-switch .form-check-input {
+            width: 3rem;
+            height: 1.5rem;
+            cursor: pointer;
+            background-color: var(--border-color);
+        }
+        .form-switch .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .zoom-control {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .zoom-control input[type="range"] {
+            width: 100px;
+            accent-color: var(--primary-color);
+        }
+        .zoom-value {
+            color: var(--text-main);
+            font-weight: 600;
+            min-width: 45px;
+        }
+        
+        /* Stats numbers */
+        .fs-4, .fs-3, .fs-2 {
+            color: var(--text-main);
+        }
+        
+        /* Border utilities */
+        .border {
+            border-color: var(--border-color) !important;
+        }
+        .border-bottom {
+            border-color: var(--border-color) !important;
+        }
+        
+        /* BG utilities override */
+        .bg-light {
+            background-color: var(--bg-input) !important;
+        }
+        
+        /* Responsive */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 56px;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: 1015;
+            }
+            .sidebar-overlay.show {
+                display: block;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% if session.user_id %}
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark">
+        <div class="container-fluid">
+            <button class="btn btn-link text-white d-lg-none p-0 me-2" id="sidebarToggle">
+                <i class="bi bi-list fs-4"></i>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="bi bi-book"></i> StudyFlow
+            </a>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <a href="{{ url_for('index') }}" class="btn-settings-nav" title="Ana Sayfa">
+                    <i class="bi bi-house"></i>
+                </a>
+                <button class="btn-settings-nav" data-bs-toggle="modal" data-bs-target="#settingsModal" title="Ayarlar">
+                    <i class="bi bi-gear"></i>
+                </button>
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle me-1"></i> 
+                        <span class="d-none d-sm-inline">{{ session.ad }} {{ session.soyad }}</span>
+                        {% if session.rol == 'admin' %}
+                        <span class="badge bg-warning text-dark ms-2">Admin</span>
+                        {% endif %}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}">
+                            <i class="bi bi-box-arrow-right me-2"></i>Çıkış Yap
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar Overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">Ana Menü</div>
+        <nav class="nav flex-column">
+            <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">
+                <i class="bi bi-speedometer2"></i> Panel
+            </a>
+            <a class="nav-link {% if request.endpoint == 'takvim' %}active{% endif %}" href="{{ url_for('takvim') }}">
+                <i class="bi bi-calendar3"></i> Alan Doluluk
+            </a>
+            <a class="nav-link {% if request.endpoint == 'profil' %}active{% endif %}" href="{{ url_for('profil') }}">
+                <i class="bi bi-person"></i> Profil
+            </a>
+        </nav>
+        
+        <div class="sidebar-section">Rezervasyonlar</div>
+        <nav class="nav flex-column">
+            <a class="nav-link {% if request.endpoint == 'yeni_rezervasyon' %}active{% endif %}" href="{{ url_for('yeni_rezervasyon') }}">
+                <i class="bi bi-plus-circle"></i> Yeni Rezervasyon
+            </a>
+            <a class="nav-link {% if request.endpoint == 'rezervasyonlarim' %}active{% endif %}" href="{{ url_for('rezervasyonlarim') }}">
+                <i class="bi bi-calendar-check"></i> Rezervasyonlarım
+            </a>
+        </nav>
+        
+        <div class="sidebar-section">Oturumlar</div>
+        <nav class="nav flex-column">
+            <a class="nav-link {% if request.endpoint == 'oturum_baslat' %}active{% endif %}" href="{{ url_for('oturum_baslat') }}">
+                <i class="bi bi-play-circle"></i> Oturum Başlat
+            </a>
+            <a class="nav-link {% if request.endpoint == 'oturumlarim' %}active{% endif %}" href="{{ url_for('oturumlarim') }}">
+                <i class="bi bi-clock-history"></i> Oturumlarım
+            </a>
+        </nav>
+        
+        <div class="sidebar-section">Araçlar</div>
+        <nav class="nav flex-column">
+            <a class="nav-link {% if request.endpoint == 'arama' or request.endpoint == 'arama_sonuc' %}active{% endif %}" href="{{ url_for('arama') }}">
+                <i class="bi bi-search"></i> Arama
+            </a>
+            <a class="nav-link {% if request.endpoint == 'zaman_onerisi' %}active{% endif %}" href="{{ url_for('zaman_onerisi') }}">
+                <i class="bi bi-lightbulb"></i> Zaman Önerisi
+            </a>
+            <a class="nav-link {% if request.endpoint == 'istatistikler' %}active{% endif %}" href="{{ url_for('istatistikler') }}">
+                <i class="bi bi-bar-chart"></i> İstatistikler
+            </a>
+        </nav>
+        
+        {% if session.rol == 'admin' %}
+        <div class="sidebar-section">Yönetim</div>
+        <nav class="nav flex-column">
+            <a class="nav-link {% if request.endpoint == 'admin_panel' %}active{% endif %}" href="{{ url_for('admin_panel') }}">
+                <i class="bi bi-shield"></i> Admin Panel
+            </a>
+            <a class="nav-link {% if request.endpoint == 'admin_raporlar' %}active{% endif %}" href="{{ url_for('admin_raporlar') }}">
+                <i class="bi bi-graph-up"></i> Raporlar
+            </a>
+            <a class="nav-link {% if request.endpoint == 'admin_kullanicilar' %}active{% endif %}" href="{{ url_for('admin_kullanicilar') }}">
+                <i class="bi bi-people"></i> Kullanıcılar
+            </a>
+            <a class="nav-link {% if request.endpoint == 'admin_alanlar' %}active{% endif %}" href="{{ url_for('admin_alanlar') }}">
+                <i class="bi bi-building"></i> Alanlar
+            </a>
+            <a class="nav-link {% if request.endpoint == 'admin_loglar' %}active{% endif %}" href="{{ url_for('admin_loglar') }}">
+                <i class="bi bi-journal-text"></i> Log Kayıtları
+            </a>
+        </nav>
+        {% endif %}
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="mb-3">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show py-2" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-gear me-2"></i>Ayarlar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <i class="bi bi-moon-stars"></i>
+                            <span>Karanlık Mod</span>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="darkModeSwitch">
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <i class="bi bi-zoom-in"></i>
+                            <span>Yakınlaştırma</span>
+                        </div>
+                        <div class="zoom-control">
+                            <input type="range" id="zoomRange" min="80" max="120" value="100" step="5">
+                            <span class="zoom-value" id="zoomValue">100%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <i class="bi bi-translate"></i>
+                            <span>Dil</span>
+                        </div>
+                        <select class="form-select" style="width: auto;" disabled>
+                            <option selected>Türkçe</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    {% block login_content %}{% endblock %}
+    {% endif %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkMode = localStorage.getItem('darkMode') === 'true';
+            const darkSwitch = document.getElementById('darkModeSwitch');
+            if (darkSwitch) darkSwitch.checked = darkMode;
+            if (darkMode) document.body.classList.add('dark-mode');
+            
+            const zoom = localStorage.getItem('zoom') || '100';
+            const zoomRange = document.getElementById('zoomRange');
+            const zoomValue = document.getElementById('zoomValue');
+            if (zoomRange && zoomValue) {
+                zoomRange.value = zoom;
+                zoomValue.textContent = zoom + '%';
+            }
+            document.body.style.zoom = zoom + '%';
+        });
+        
+        document.getElementById('darkModeSwitch')?.addEventListener('change', function() {
+            document.body.classList.toggle('dark-mode', this.checked);
+            localStorage.setItem('darkMode', this.checked);
+        });
+        
+        document.getElementById('zoomRange')?.addEventListener('input', function() {
+            document.getElementById('zoomValue').textContent = this.value + '%';
+            document.body.style.zoom = this.value + '%';
+            localStorage.setItem('zoom', this.value);
+        });
+        
+        document.getElementById('sidebarToggle')?.addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('show');
+            document.getElementById('sidebarOverlay').classList.toggle('show');
+        });
+        document.getElementById('sidebarOverlay')?.addEventListener('click', function() {
+            document.getElementById('sidebar').classList.remove('show');
+            this.classList.remove('show');
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

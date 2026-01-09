@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Rezervasyon Güncelle - StudyFlow{% endblock %}
+
+{% block content %}
+<h4 class="mb-4"><i class="bi bi-pencil me-2"></i>Rezervasyon Güncelle</h4>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">Rezervasyon #{{ rezervasyon.rezervasyon_id }}</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>Alan:</strong> {{ rezervasyon.alan_adi }}
+                    <div class="text-muted small">{{ rezervasyon.konum }}</div>
+                </div>
+                <div class="mb-3">
+                    <strong>Tarih:</strong> {{ rezervasyon.baslangic_zamani.strftime('%d.%m.%Y') }}
+                </div>
+                <div class="mb-4">
+                    <strong>Saat:</strong> {{ rezervasyon.baslangic_zamani.strftime('%H:%M') }} - {{ rezervasyon.bitis_zamani.strftime('%H:%M') }}
+                </div>
+                
+                <form method="POST" action="{{ url_for('rezervasyon_guncelle', rezervasyon_id=rezervasyon.rezervasyon_id) }}">
+                    <div class="mb-3">
+                        <label for="durum" class="form-label">Durum</label>
+                        <select class="form-select" id="durum" name="durum">
+                            <option value="aktif" {% if rezervasyon.durum == 'aktif' %}selected{% endif %}>Aktif</option>
+                            <option value="iptal" {% if rezervasyon.durum == 'iptal' %}selected{% endif %}>İptal</option>
+                            <option value="tamamlandi" {% if rezervasyon.durum == 'tamamlandi' %}selected{% endif %}>Tamamlandı</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notlar" class="form-label">Notlar</label>
+                        <textarea class="form-control" id="notlar" name="notlar" rows="3">{{ rezervasyon.notlar or '' }}</textarea>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> Kaydet
+                        </button>
+                        <a href="{{ url_for('rezervasyonlarim') }}" class="btn btn-secondary">İptal</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

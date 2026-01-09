@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyFlow - Etüt ve Çalışma Alanı Rezervasyon Sistemi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #7c3aed;
+            --bg-main: #0f172a;
+            --bg-card: rgba(255,255,255,0.05);
+            --bg-input: rgba(255,255,255,0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255,255,255,0.1);
+        }
+        
+        body.light-mode {
+            --bg-main: #f8fafc;
+            --bg-card: rgba(0,0,0,0.03);
+            --bg-input: rgba(0,0,0,0.05);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: rgba(0,0,0,0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        body {
+            background: var(--bg-main);
+            color: var(--text-main);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        body:not(.light-mode) {
+            background-image: 
+                radial-gradient(ellipse at 20% 20%, rgba(79, 70, 229, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(124, 58, 237, 0.15) 0%, transparent 50%);
+        }
+        
+        body.light-mode {
+            background-image: 
+                radial-gradient(ellipse at 20% 20%, rgba(79, 70, 229, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(124, 58, 237, 0.08) 0%, transparent 50%);
+        }
+        
+        /* Navbar */
+        .navbar-custom {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            backdrop-filter: blur(20px);
+            padding: 1rem 2rem;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #ffffff !important;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+        
+        .navbar-brand i {
+            color: #ffffff;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+        
+        .btn-nav {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #ffffff;
+            padding: 0.5rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-nav:hover {
+            background: rgba(255,255,255,0.25);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+        
+        .btn-nav-primary {
+            background: rgba(255,255,255,0.95);
+            border: none;
+            color: var(--primary);
+        }
+        
+        .btn-nav-primary:hover {
+            background: #ffffff;
+            color: var(--primary-dark);
+            box-shadow: 0 4px 20px rgba(255,255,255,0.3);
+        }
+        
+        .btn-settings {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #ffffff;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-settings:hover {
+            background: rgba(255,255,255,0.2);
+            color: #ffffff;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .hero-container {
+            text-align: center;
+            max-width: 700px;
+        }
+        
+        .hero-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #ffffff;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(79, 70, 229, 0.3);
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-hero {
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-hero-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+        }
+        
+        .btn-hero-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.4);
+            color: white;
+        }
+        
+        .btn-hero-secondary {
+            background: transparent;
+            color: var(--text-main);
+            border: 2px solid var(--border-color);
+        }
+        
+        body.light-mode .btn-hero-secondary {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-hero-secondary:hover {
+            background: var(--bg-card);
+            color: var(--text-main);
+        }
+        
+        body.light-mode .btn-hero-secondary:hover {
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--primary);
+        }
+        
+        /* Footer */
+        .footer-custom {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-color);
+            padding: 1.25rem 2rem;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .footer-left {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .footer-team {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .team-member {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .team-member:hover {
+            background: var(--bg-card);
+            color: var(--text-main);
+        }
+        
+        .team-member i {
+            color: var(--primary);
+        }
+        
+        /* Tooltip for team members */
+        .team-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            margin-bottom: 8px;
+        }
+        
+        body.light-mode .team-tooltip {
+            background: #ffffff;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .team-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: var(--border-color);
+        }
+        
+        .team-member:hover .team-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .team-tooltip .info-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+            color: var(--text-main);
+        }
+        
+        .team-tooltip .info-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .team-tooltip .info-row i {
+            color: var(--primary);
+            width: 16px;
+        }
+        
+        /* Settings Modal */
+        .modal-content {
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+        }
+        
+        body.light-mode .modal-content {
+            background: #ffffff;
+        }
+        
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.25rem 1.5rem;
+        }
+        
+        .modal-title {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .btn-close {
+            filter: invert(1);
+        }
+        
+        body.light-mode .btn-close {
+            filter: none;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-card);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+        
+        .setting-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .setting-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-main);
+        }
+        
+        .setting-label i {
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+        
+        /* Form Switch */
+        .form-switch .form-check-input {
+            width: 3rem;
+            height: 1.5rem;
+            background-color: var(--bg-input);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .form-switch .form-check-input:checked {
+            background-color: var(--primary);
+        }
+        
+        .form-switch .form-check-input:focus {
+            box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.25);
+        }
+        
+        /* Zoom Slider */
+        .zoom-control {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .zoom-control input[type="range"] {
+            width: 120px;
+            accent-color: var(--primary);
+        }
+        
+        .zoom-value {
+            color: var(--text-main);
+            font-weight: 600;
+            min-width: 50px;
+            text-align: center;
+        }
+        
+        .form-select {
+            background-color: var(--bg-card);
+            border-color: var(--border-color);
+            color: var(--text-main);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .footer-team {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar-custom">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="bi bi-book"></i>
+                StudyFlow
+            </a>
+            <div class="nav-buttons">
+                {% if session.user_id %}
+                <a href="{{ url_for('dashboard') }}" class="btn-nav btn-nav-primary">
+                    <i class="bi bi-speedometer2"></i>
+                    Panele Git
+                </a>
+                {% else %}
+                <a href="{{ url_for('login') }}" class="btn-nav">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    Giriş Yap
+                </a>
+                {% endif %}
+                <button class="btn-settings" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                    <i class="bi bi-gear"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="hero-container">
+            <div class="hero-icon">
+                <i class="bi bi-book"></i>
+            </div>
+            <h1 class="hero-title">StudyFlow</h1>
+            <p class="hero-subtitle">
+                Kütüphane ve çalışma alanlarını kolayca rezerve edin.<br>
+                Akıllı öneriler ile en verimli çalışma zamanını keşfedin.
+            </p>
+            <div class="hero-buttons">
+                {% if session.user_id %}
+                <a href="{{ url_for('dashboard') }}" class="btn-hero btn-hero-primary">
+                    <i class="bi bi-speedometer2"></i>
+                    Panele Git
+                </a>
+                <a href="{{ url_for('yeni_rezervasyon') }}" class="btn-hero btn-hero-secondary">
+                    <i class="bi bi-calendar-plus"></i>
+                    Rezervasyon Yap
+                </a>
+                {% else %}
+                <a href="{{ url_for('login') }}" class="btn-hero btn-hero-primary">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    Giriş Yap
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-custom">
+        <div class="container-fluid">
+            <div class="footer-content">
+                <div class="footer-left">
+                    © 2025 StudyFlow — Veritabanı Yönetimi Dersi Projesi
+                </div>
+                <div class="footer-team">
+                    <span class="team-member">
+                        <i class="bi bi-person-circle"></i> Gökhan Dumlupınar
+                        <div class="team-tooltip">
+                            <div class="info-row"><i class="bi bi-hash"></i> 23011503</div>
+                            <div class="info-row"><i class="bi bi-envelope"></i> gokhan.dumlupinar@std.yildiz.edu.tr</div>
+                        </div>
+                    </span>
+                    <span class="team-member">
+                        <i class="bi bi-person-circle"></i> Sergen Yalçın
+                        <div class="team-tooltip">
+                            <div class="info-row"><i class="bi bi-hash"></i> 23011507</div>
+                            <div class="info-row"><i class="bi bi-envelope"></i> sergen.yalcin@std.yildiz.edu.tr</div>
+                        </div>
+                    </span>
+                    <span class="team-member">
+                        <i class="bi bi-person-circle"></i> Ata Metin Türetken
+                        <div class="team-tooltip">
+                            <div class="info-row"><i class="bi bi-hash"></i> 20011050</div>
+                            <div class="info-row"><i class="bi bi-envelope"></i> metin.turetken@std.yildiz.edu.tr</div>
+                        </div>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-gear me-2"></i>Ayarlar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <i class="bi bi-moon-stars"></i>
+                            <span>Karanlık Mod</span>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="darkModeSwitch" checked>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <i class="bi bi-zoom-in"></i>
+                            <span>Yakınlaştırma</span>
+                        </div>
+                        <div class="zoom-control">
+                            <input type="range" id="zoomRange" min="80" max="120" value="100" step="5">
+                            <span class="zoom-value" id="zoomValue">100%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <i class="bi bi-translate"></i>
+                            <span>Dil</span>
+                        </div>
+                        <select class="form-select" style="width: auto;" disabled>
+                            <option selected>Türkçe</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Dark mode - varsayılan true (karanlık)
+            const darkMode = localStorage.getItem('darkMode') !== 'false';
+            document.getElementById('darkModeSwitch').checked = darkMode;
+            if (!darkMode) {
+                document.body.classList.add('light-mode');
+            }
+            
+            // Zoom
+            const zoom = localStorage.getItem('zoom') || '100';
+            document.getElementById('zoomRange').value = zoom;
+            document.getElementById('zoomValue').textContent = zoom + '%';
+            document.body.style.zoom = zoom + '%';
+        });
+        
+        document.getElementById('darkModeSwitch').addEventListener('change', function() {
+            if (this.checked) {
+                document.body.classList.remove('light-mode');
+                localStorage.setItem('darkMode', 'true');
+            } else {
+                document.body.classList.add('light-mode');
+                localStorage.setItem('darkMode', 'false');
+            }
+        });
+        
+        document.getElementById('zoomRange').addEventListener('input', function() {
+            document.getElementById('zoomValue').textContent = this.value + '%';
+            document.body.style.zoom = this.value + '%';
+            localStorage.setItem('zoom', this.value);
+        });
+    </script>
+</body>
+</html>

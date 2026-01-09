@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş - StudyFlow</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #7c3aed;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+        
+        body.light-mode {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-input: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+        
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-main);
+            color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        body:not(.light-mode) {
+            background-image: 
+                radial-gradient(ellipse at 20% 20%, rgba(79, 70, 229, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(124, 58, 237, 0.1) 0%, transparent 50%);
+        }
+        
+        /* Navbar */
+        .navbar-custom {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 1rem 2rem;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+        
+        .btn-settings-nav {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .btn-settings-nav:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        /* Main */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .auth-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 2rem;
+            width: 100%;
+            max-width: 420px;
+            border: 1px solid var(--border-color);
+        }
+        
+        body.light-mode .auth-card {
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .auth-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .auth-title {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        
+        .auth-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Tabs */
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            background: var(--bg-input);
+            border-radius: 10px;
+            padding: 4px;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 0.6rem;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .auth-tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .auth-tab:hover:not(.active) {
+            color: var(--text-main);
+        }
+        
+        /* Forms */
+        .form-label {
+            color: var(--text-main);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .form-control, .form-select {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background: var(--bg-input);
+            border-color: var(--primary);
+            color: var(--text-main);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+        
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .input-group-text {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+        }
+        
+        .btn-auth {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        
+        .btn-auth:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+            color: white;
+        }
+        
+        .demo-info {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding: 0.75rem;
+            background: rgba(79, 70, 229, 0.1);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        
+        .demo-info strong {
+            color: var(--text-main);
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        /* Settings Modal */
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+        }
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+        }
+        .modal-title {
+            color: var(--text-main);
+        }
+        .btn-close {
+            filter: invert(1);
+        }
+        body.light-mode .btn-close {
+            filter: none;
+        }
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-input);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+        .setting-item:last-child {
+            margin-bottom: 0;
+        }
+        .setting-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-main);
+        }
+        .setting-label i {
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+        .form-switch .form-check-input {
+            width: 3rem;
+            height: 1.5rem;
+            cursor: pointer;
+            background-color: var(--border-color);
+        }
+        .form-switch .form-check-input:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        .zoom-control {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .zoom-control input[type="range"] {
+            width: 100px;
+            accent-color: var(--primary);
+        }
+        .zoom-value {
+            color: var(--text-main);
+            font-weight: 600;
+            min-width: 45px;
+        }
+        
+        .row-cols-2 > .col {
+            margin-bottom: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar-custom d-flex justify-content-between align-items-center">
+        <a class="navbar-brand" href="{{ url_for('index') }}">
+            <i class="bi bi-book"></i>
+            StudyFlow
+        </a>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('index') }}" class="btn-settings-nav" title="Ana Sayfa">
+                <i class="bi bi-house"></i>
+            </a>
+            <button class="btn-settings-nav" data-bs-toggle="modal" data-bs-target="#settingsModal" title="Ayarlar">
+                <i class="bi bi-gear"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="auth-card">
+            <div class="auth-icon">
+                <i class="bi bi-person"></i>
+            </div>
+            <h4 class="auth-title">StudyFlow</h4>
+            <p class="auth-subtitle">Hesabınıza giriş yapın veya kayıt olun</p>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} py-2 mb-3">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+            
+            <!-- Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="showForm('login')">Giriş Yap</button>
+                <button class="auth-tab" onclick="showForm('register')">Kayıt Ol</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form method="POST" action="{{ url_for('login') }}" class="auth-form active" id="loginForm">
+                <div class="mb-3">
+                    <label for="ogrenci_no" class="form-label">Öğrenci Numarası</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="text" class="form-control" id="ogrenci_no" name="ogrenci_no" 
+                               placeholder="Öğrenci numaranız" required>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="sifre" class="form-label">Şifre</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                        <input type="password" class="form-control" id="sifre" name="sifre" 
+                               placeholder="Şifreniz" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-auth">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Giriş Yap
+                </button>
+                
+                <div class="demo-info">
+                    <strong>Demo:</strong> 20210001 / sifre123 &nbsp;|&nbsp;
+                    <strong>Admin:</strong> ADMIN001 / admin123
+                </div>
+            </form>
+            
+            <!-- Register Form -->
+            <form method="POST" action="{{ url_for('register') }}" class="auth-form" id="registerForm">
+                <div class="row row-cols-2">
+                    <div class="col">
+                        <label for="reg_ad" class="form-label">Ad</label>
+                        <input type="text" class="form-control" id="reg_ad" name="ad" placeholder="Adınız" required>
+                    </div>
+                    <div class="col">
+                        <label for="reg_soyad" class="form-label">Soyad</label>
+                        <input type="text" class="form-control" id="reg_soyad" name="soyad" placeholder="Soyadınız" required>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="reg_ogrenci_no" class="form-label">Öğrenci Numarası</label>
+                    <input type="text" class="form-control" id="reg_ogrenci_no" name="ogrenci_no" 
+                           placeholder="Örn: 20011050" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="reg_email" class="form-label">Okul E-postası</label>
+                    <input type="email" class="form-control" id="reg_email" name="email" 
+                           placeholder="ornek@std.yildiz.edu.tr" required
+                           pattern=".+@std\.yildiz\.edu\.tr$"
+                           title="Sadece @std.yildiz.edu.tr uzantılı e-postalar kabul edilir">
+                </div>
+                
+                <div class="mb-3">
+                    <label for="reg_bolum" class="form-label">Bölüm</label>
+                    <select class="form-select" id="reg_bolum" name="bolum" required>
+                        <option value="">Bölüm seçin...</option>
+                        <optgroup label="Elektrik-Elektronik Fakültesi">
+                            <option value="Bilgisayar Mühendisliği">Bilgisayar Mühendisliği</option>
+                            <option value="Elektrik Mühendisliği">Elektrik Mühendisliği</option>
+                            <option value="Elektronik ve Haberleşme Mühendisliği">Elektronik ve Haberleşme Mühendisliği</option>
+                            <option value="Biyomedikal Mühendisliği">Biyomedikal Mühendisliği</option>
+                            <option value="Kontrol ve Otomasyon Mühendisliği">Kontrol ve Otomasyon Mühendisliği</option>
+                        </optgroup>
+                        <optgroup label="Makine Fakültesi">
+                            <option value="Makine Mühendisliği">Makine Mühendisliği</option>
+                            <option value="Mekatronik Mühendisliği">Mekatronik Mühendisliği</option>
+                            <option value="Endüstri Mühendisliği">Endüstri Mühendisliği</option>
+                        </optgroup>
+                        <optgroup label="İnşaat Fakültesi">
+                            <option value="İnşaat Mühendisliği">İnşaat Mühendisliği</option>
+                            <option value="Çevre Mühendisliği">Çevre Mühendisliği</option>
+                            <option value="Harita Mühendisliği">Harita Mühendisliği</option>
+                        </optgroup>
+                        <optgroup label="Kimya-Metalurji Fakültesi">
+                            <option value="Kimya Mühendisliği">Kimya Mühendisliği</option>
+                            <option value="Metalurji ve Malzeme Mühendisliği">Metalurji ve Malzeme Mühendisliği</option>
+                            <option value="Gıda Mühendisliği">Gıda Mühendisliği</option>
+                            <option value="Matematik Mühendisliği">Matematik Mühendisliği</option>
+                            <option value="Biyomühendislik">Biyomühendislik</option>
+                        </optgroup>
+                        <optgroup label="Gemi İnşaatı ve Denizcilik Fakültesi">
+                            <option value="Gemi İnşaatı ve Gemi Makineleri Mühendisliği">Gemi İnşaatı ve Gemi Makineleri Mühendisliği</option>
+                            <option value="Gemi Makineleri İşletme Mühendisliği">Gemi Makineleri İşletme Mühendisliği</option>
+                            <option value="Deniz Ulaştırma İşletme Mühendisliği">Deniz Ulaştırma İşletme Mühendisliği</option>
+                        </optgroup>
+                        <optgroup label="Fen-Edebiyat Fakültesi">
+                            <option value="Fizik">Fizik</option>
+                            <option value="Kimya">Kimya</option>
+                            <option value="Matematik">Matematik</option>
+                            <option value="İstatistik">İstatistik</option>
+                            <option value="Moleküler Biyoloji ve Genetik">Moleküler Biyoloji ve Genetik</option>
+                            <option value="Türk Dili ve Edebiyatı">Türk Dili ve Edebiyatı</option>
+                            <option value="Tarih">Tarih</option>
+                            <option value="Sosyoloji">Sosyoloji</option>
+                            <option value="Batı Dilleri ve Edebiyatları">Batı Dilleri ve Edebiyatları</option>
+                            <option value="Felsefe">Felsefe</option>
+                            <option value="İnsan ve Toplum Bilimleri">İnsan ve Toplum Bilimleri</option>
+                        </optgroup>
+                        <optgroup label="Mimarlık Fakültesi">
+                            <option value="Mimarlık">Mimarlık</option>
+                            <option value="Şehir ve Bölge Planlama">Şehir ve Bölge Planlama</option>
+                        </optgroup>
+                        <optgroup label="Sanat ve Tasarım Fakültesi">
+                            <option value="Sanat ve Kültür Yönetimi">Sanat ve Kültür Yönetimi</option>
+                            <option value="Endüstriyel Tasarım">Endüstriyel Tasarım</option>
+                            <option value="İletişim Tasarımı">İletişim Tasarımı</option>
+                        </optgroup>
+                        <optgroup label="İktisadi ve İdari Bilimler Fakültesi">
+                            <option value="İktisat">İktisat</option>
+                            <option value="İşletme">İşletme</option>
+                            <option value="Siyaset Bilimi ve Uluslararası İlişkiler">Siyaset Bilimi ve Uluslararası İlişkiler</option>
+                        </optgroup>
+                        <optgroup label="Eğitim Fakültesi">
+                            <option value="Bilgisayar ve Öğretim Teknolojileri Öğretmenliği">Bilgisayar ve Öğretim Teknolojileri Öğretmenliği</option>
+                            <option value="Matematik Öğretmenliği">Matematik Öğretmenliği</option>
+                            <option value="Fen Bilgisi Öğretmenliği">Fen Bilgisi Öğretmenliği</option>
+                            <option value="Türkçe Öğretmenliği">Türkçe Öğretmenliği</option>
+                            <option value="Sosyal Bilgiler Öğretmenliği">Sosyal Bilgiler Öğretmenliği</option>
+                            <option value="İngilizce Öğretmenliği">İngilizce Öğretmenliği</option>
+                            <option value="Fransızca Öğretmenliği">Fransızca Öğretmenliği</option>
+                            <option value="Almanca Öğretmenliği">Almanca Öğretmenliği</option>
+                            <option value="Rehberlik ve Psikolojik Danışmanlık">Rehberlik ve Psikolojik Danışmanlık</option>
+                        </optgroup>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="reg_sifre" class="form-label">Şifre</label>
+                    <input type="password" class="form-control" id="reg_sifre" name="sifre" 
+                           placeholder="En az 6 karakter" required minlength="6">
+                </div>
+                
+                <button type="submit" class="btn-auth">
+                    <i class="bi bi-person-plus me-2"></i>Kayıt Ol
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-gear me-2"></i>Ayarlar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <i class="bi bi-moon-stars"></i>
+                            <span>Karanlık Mod</span>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="darkModeSwitch">
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <i class="bi bi-zoom-in"></i>
+                            <span>Yakınlaştırma</span>
+                        </div>
+                        <div class="zoom-control">
+                            <input type="range" id="zoomRange" min="80" max="120" value="100" step="5">
+                            <span class="zoom-value" id="zoomValue">100%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <i class="bi bi-translate"></i>
+                            <span>Dil</span>
+                        </div>
+                        <select class="form-select" style="width: auto;" disabled>
+                            <option selected>Türkçe</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showForm(type) {
+            document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(type + 'Form').classList.add('active');
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Dark mode
+            const darkMode = localStorage.getItem('darkMode') !== 'false';
+            document.getElementById('darkModeSwitch').checked = darkMode;
+            if (!darkMode) {
+                document.body.classList.add('light-mode');
+            }
+            
+            // Zoom
+            const zoom = localStorage.getItem('zoom') || '100';
+            document.getElementById('zoomRange').value = zoom;
+            document.getElementById('zoomValue').textContent = zoom + '%';
+            document.body.style.zoom = zoom + '%';
+        });
+        
+        document.getElementById('darkModeSwitch').addEventListener('change', function() {
+            if (this.checked) {
+                document.body.classList.remove('light-mode');
+                localStorage.setItem('darkMode', 'true');
+            } else {
+                document.body.classList.add('light-mode');
+                localStorage.setItem('darkMode', 'false');
+            }
+        });
+        
+        document.getElementById('zoomRange').addEventListener('input', function() {
+            document.getElementById('zoomValue').textContent = this.value + '%';
+            document.body.style.zoom = this.value + '%';
+            localStorage.setItem('zoom', this.value);
+        });
+    </script>
+</body>
+</html>

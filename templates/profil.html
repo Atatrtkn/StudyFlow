@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Profil - StudyFlow{% endblock %}
+
+{% block content %}
+<h4 class="mb-4"><i class="bi bi-person-circle me-2"></i>Profilim</h4>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body text-center py-4">
+                <div class="mb-3">
+                    <div class="rounded-circle d-inline-flex align-items-center justify-content-center" 
+                         style="width: 100px; height: 100px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); font-size: 2.5rem; color: white;">
+                        {{ kullanici.ad[0] }}{{ kullanici.soyad[0] }}
+                    </div>
+                </div>
+                <h5 style="color: var(--text-main);">{{ kullanici.ad }} {{ kullanici.soyad }}</h5>
+                <p style="color: var(--text-muted);">{{ kullanici.ogrenci_no }}</p>
+                {% if kullanici.rol == 'admin' %}
+                <span class="badge bg-warning text-dark">Admin</span>
+                {% else %}
+                <span class="badge bg-primary">Öğrenci</span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">İstatistikler</div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-3">
+                    <span style="color: var(--text-muted);">Toplam Rezervasyon</span>
+                    <strong style="color: var(--text-main);">{{ stats.toplam_rezervasyon or 0 }}</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span style="color: var(--text-muted);">Toplam Oturum</span>
+                    <strong style="color: var(--text-main);">{{ stats.toplam_oturum or 0 }}</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span style="color: var(--text-muted);">Çalışma Süresi</span>
+                    <strong style="color: var(--text-main);">{{ "%.1f"|format(stats.toplam_saat or 0) }} saat</strong>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span style="color: var(--text-muted);">Ort. Verimlilik</span>
+                    <strong style="color: var(--text-main);">{{ stats.ort_verimlilik or 0 }}/10</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">Profil Bilgileri</div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('profil') }}">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Ad</label>
+                            <input type="text" class="form-control" name="ad" value="{{ kullanici.ad }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Soyad</label>
+                            <input type="text" class="form-control" name="soyad" value="{{ kullanici.soyad }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Öğrenci No</label>
+                            <input type="text" class="form-control" value="{{ kullanici.ogrenci_no }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">E-posta</label>
+                            <input type="email" class="form-control" name="email" value="{{ kullanici.email }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Kayıt Tarihi</label>
+                            <input type="text" class="form-control" value="{{ kullanici.kayit_tarihi.strftime('%d.%m.%Y') }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Rol</label>
+                            <input type="text" class="form-control" value="{{ 'Admin' if kullanici.rol == 'admin' else 'Öğrenci' }}" disabled>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <h6 style="color: var(--text-main);"><i class="bi bi-key me-2"></i>Şifre Değiştir</h6>
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <label class="form-label">Yeni Şifre</label>
+                            <input type="password" class="form-control" name="yeni_sifre" placeholder="Değiştirmek istemiyorsanız boş bırakın">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i> Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

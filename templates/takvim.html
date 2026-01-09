@@ -1,0 +1,363 @@
+{% extends 'base.html' %}
+
+{% block title %}Alan Doluluk - StudyFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    .date-nav {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+    .date-nav .btn {
+        padding: 0.5rem 1rem;
+    }
+    .date-display {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-main);
+        min-width: 200px;
+        text-align: center;
+    }
+    
+    .legend {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        padding: 1rem;
+        background: var(--bg-card);
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-color);
+    }
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-main);
+        font-size: 0.9rem;
+    }
+    .legend-color {
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+    }
+    
+    .location-section {
+        margin-bottom: 1.5rem;
+    }
+    .location-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 0.75rem 1rem;
+        border-radius: 8px 8px 0 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .location-header i {
+        font-size: 1.1rem;
+    }
+    
+    .schedule-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        overflow: hidden;
+    }
+    .schedule-table th {
+        background: var(--bg-input);
+        color: var(--text-main);
+        font-weight: 600;
+        font-size: 0.75rem;
+        padding: 0.5rem 0.25rem;
+        text-align: center;
+        border: 1px solid var(--border-color);
+        min-width: 45px;
+    }
+    .schedule-table th.alan-header {
+        min-width: 180px;
+        text-align: left;
+        padding-left: 1rem;
+        position: sticky;
+        left: 0;
+        background: var(--bg-input);
+        z-index: 10;
+    }
+    .schedule-table td {
+        border: 1px solid var(--border-color);
+        padding: 0;
+        height: 50px;
+        vertical-align: middle;
+    }
+    .schedule-table td.alan-cell {
+        padding: 0.5rem 1rem;
+        background: var(--bg-card);
+        position: sticky;
+        left: 0;
+        z-index: 10;
+    }
+    .alan-name {
+        font-weight: 600;
+        color: var(--text-main);
+        font-size: 0.9rem;
+    }
+    .alan-info {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+    
+    .time-slot {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+    .time-slot:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        z-index: 5;
+        position: relative;
+    }
+    
+    .slot-empty {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: white;
+    }
+    .slot-partial {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+    }
+    .slot-full {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+    }
+    
+    .table-wrapper {
+        overflow-x: auto;
+        border-radius: 0 0 8px 8px;
+    }
+    
+    .quick-info {
+        position: fixed;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        z-index: 1000;
+        display: none;
+        font-size: 0.85rem;
+        max-width: 250px;
+    }
+    .quick-info.show {
+        display: block;
+    }
+    .quick-info-title {
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 0.25rem;
+    }
+    .quick-info-detail {
+        color: var(--text-muted);
+    }
+    
+    @media (max-width: 768px) {
+        .schedule-table th, .schedule-table td {
+            min-width: 40px;
+        }
+        .schedule-table th.alan-header, .schedule-table td.alan-cell {
+            min-width: 120px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h4 class="mb-4"><i class="bi bi-calendar3 me-2"></i>Alan Doluluk</h4>
+
+<div class="date-nav">
+    <a href="{{ url_for('takvim', tarih=(secili_tarih | replace('-', '/') | string | truncate(10, True, '') | replace('/', '-')) if secili_tarih else '') }}" 
+       class="btn btn-outline-primary" id="prevDay">
+        <i class="bi bi-chevron-left"></i>
+    </a>
+    <div class="date-display" id="dateDisplay">{{ secili_tarih }}</div>
+    <a href="#" class="btn btn-outline-primary" id="nextDay">
+        <i class="bi bi-chevron-right"></i>
+    </a>
+    <input type="date" class="form-control" id="datePicker" value="{{ secili_tarih }}" style="width: auto;">
+    <a href="{{ url_for('takvim') }}" class="btn btn-primary">
+        <i class="bi bi-calendar-date"></i> Bugün
+    </a>
+</div>
+
+<div class="legend">
+    <div class="legend-item">
+        <div class="legend-color" style="background: linear-gradient(135deg, #22c55e, #16a34a);"></div>
+        <span>Müsait</span>
+    </div>
+    <div class="legend-item">
+        <div class="legend-color" style="background: linear-gradient(135deg, #f59e0b, #d97706);"></div>
+        <span>Kısmen Dolu</span>
+    </div>
+    <div class="legend-item">
+        <div class="legend-color" style="background: linear-gradient(135deg, #ef4444, #dc2626);"></div>
+        <span>Dolu</span>
+    </div>
+</div>
+
+{% for konum, alanlar in konumlar.items() %}
+<div class="location-section">
+    <div class="location-header">
+        <i class="bi bi-geo-alt"></i>
+        {{ konum }}
+        <span class="badge bg-light text-dark ms-2">{{ alanlar|length }} alan</span>
+    </div>
+    <div class="table-wrapper">
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th class="alan-header">Alan</th>
+                    {% for saat in saatler %}
+                    <th>{{ "%02d:00"|format(saat) }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for alan in alanlar %}
+                <tr>
+                    <td class="alan-cell">
+                        <div class="alan-name">{{ alan.alan_adi }}</div>
+                        <div class="alan-info">{{ alan.tur_adi }} • Kapasite: {{ alan.kapasite }}</div>
+                    </td>
+                    {% for saat in saatler %}
+                    {% set rez_sayisi = doluluk.get(alan.alan_id, {}).get(saat, 0) %}
+                    {% set kapasite = alan.kapasite %}
+                    {% if rez_sayisi >= kapasite %}
+                        {% set slot_class = 'slot-full' %}
+                        {% set slot_text = 'Dolu' %}
+                        {% set clickable = false %}
+                    {% elif rez_sayisi > 0 %}
+                        {% set slot_class = 'slot-partial' %}
+                        {% set slot_text = (kapasite - rez_sayisi)|string + '/' + kapasite|string %}
+                        {% set clickable = true %}
+                    {% else %}
+                        {% set slot_class = 'slot-empty' %}
+                        {% set slot_text = 'Boş' %}
+                        {% set clickable = true %}
+                    {% endif %}
+                    <td>
+                        {% if clickable %}
+                        <a href="{{ url_for('yeni_rezervasyon') }}?alan_id={{ alan.alan_id }}&tarih={{ secili_tarih }}&baslangic={{ "%02d:00"|format(saat) }}&bitis={{ "%02d:00"|format(saat + 1) }}" 
+                           class="time-slot {{ slot_class }}"
+                           data-alan="{{ alan.alan_adi }}"
+                           data-saat="{{ "%02d:00"|format(saat) }}"
+                           data-kapasite="{{ kapasite }}"
+                           data-dolu="{{ rez_sayisi }}">
+                            {{ slot_text }}
+                        </a>
+                        {% else %}
+                        <div class="time-slot {{ slot_class }}">
+                            {{ slot_text }}
+                        </div>
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endfor %}
+
+<div class="quick-info" id="quickInfo">
+    <div class="quick-info-title" id="quickInfoTitle"></div>
+    <div class="quick-info-detail" id="quickInfoDetail"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const datePicker = document.getElementById('datePicker');
+    const dateDisplay = document.getElementById('dateDisplay');
+    const prevDay = document.getElementById('prevDay');
+    const nextDay = document.getElementById('nextDay');
+    
+    const currentDate = new Date('{{ secili_tarih }}');
+    
+    function formatDate(date) {
+        return date.toISOString().split('T')[0];
+    }
+    
+    function formatDisplayDate(dateStr) {
+        const date = new Date(dateStr);
+        const days = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+        const months = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+        return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}, ${days[date.getDay()]}`;
+    }
+    
+    dateDisplay.textContent = formatDisplayDate('{{ secili_tarih }}');
+    
+    datePicker.addEventListener('change', function() {
+        window.location.href = '{{ url_for("takvim") }}?tarih=' + this.value;
+    });
+    
+    prevDay.addEventListener('click', function(e) {
+        e.preventDefault();
+        const prev = new Date(currentDate);
+        prev.setDate(prev.getDate() - 1);
+        window.location.href = '{{ url_for("takvim") }}?tarih=' + formatDate(prev);
+    });
+    
+    nextDay.addEventListener('click', function(e) {
+        e.preventDefault();
+        const next = new Date(currentDate);
+        next.setDate(next.getDate() + 1);
+        window.location.href = '{{ url_for("takvim") }}?tarih=' + formatDate(next);
+    });
+    
+    const quickInfo = document.getElementById('quickInfo');
+    const quickInfoTitle = document.getElementById('quickInfoTitle');
+    const quickInfoDetail = document.getElementById('quickInfoDetail');
+    
+    document.querySelectorAll('.time-slot[data-alan]').forEach(slot => {
+        slot.addEventListener('mouseenter', function(e) {
+            const alan = this.dataset.alan;
+            const saat = this.dataset.saat;
+            const kapasite = this.dataset.kapasite;
+            const dolu = this.dataset.dolu;
+            
+            quickInfoTitle.textContent = alan;
+            quickInfoDetail.innerHTML = `
+                <div>Saat: ${saat}</div>
+                <div>Kapasite: ${kapasite}</div>
+                <div>Dolu: ${dolu} / Boş: ${kapasite - dolu}</div>
+                <div class="mt-1 text-primary"><i class="bi bi-plus-circle"></i> Rezervasyon için tıklayın</div>
+            `;
+            
+            const rect = this.getBoundingClientRect();
+            quickInfo.style.left = (rect.left + window.scrollX) + 'px';
+            quickInfo.style.top = (rect.bottom + window.scrollY + 5) + 'px';
+            quickInfo.classList.add('show');
+        });
+        
+        slot.addEventListener('mouseleave', function() {
+            quickInfo.classList.remove('show');
+        });
+    });
+});
+</script>
+{% endblock %}

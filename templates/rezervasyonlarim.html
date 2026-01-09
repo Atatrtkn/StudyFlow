@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Rezervasyonlarım - StudyFlow{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-calendar-check me-2"></i>Rezervasyonlarım</h4>
+    <a href="{{ url_for('yeni_rezervasyon') }}" class="btn btn-primary">
+        <i class="bi bi-plus"></i> Yeni Rezervasyon
+    </a>
+</div>
+
+{% if rezervasyonlar %}
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Alan</th>
+                    <th>Tarih</th>
+                    <th>Saat</th>
+                    <th>Durum</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in rezervasyonlar %}
+                <tr>
+                    <td>#{{ r.rezervasyon_id }}</td>
+                    <td>
+                        <strong>{{ r.alan_adi }}</strong>
+                        <div class="text-muted small">{{ r.konum }}</div>
+                    </td>
+                    <td>{{ r.baslangic_zamani.strftime('%d.%m.%Y') }}</td>
+                    <td>{{ r.baslangic_zamani.strftime('%H:%M') }} - {{ r.bitis_zamani.strftime('%H:%M') }}</td>
+                    <td>
+                        {% if r.durum == 'aktif' %}
+                        <span class="badge bg-success">Aktif</span>
+                        {% elif r.durum == 'iptal' %}
+                        <span class="badge bg-danger">İptal</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Tamamlandı</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if r.durum == 'aktif' %}
+                        <a href="{{ url_for('rezervasyon_guncelle', rez_id=r.rezervasyon_id) }}" 
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <form method="POST" action="{{ url_for('rezervasyon_iptal', rez_id=r.rezervasyon_id) }}" 
+                              class="d-inline" onsubmit="return confirm('İptal etmek istediğinize emin misiniz?')">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-calendar-x text-muted" style="font-size: 4rem;"></i>
+        <h5 class="mt-3 text-muted">Henüz rezervasyonunuz yok</h5>
+        <a href="{{ url_for('yeni_rezervasyon') }}" class="btn btn-primary mt-2">
+            <i class="bi bi-plus"></i> İlk Rezervasyonu Oluştur
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

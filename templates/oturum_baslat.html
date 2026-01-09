@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+
+{% block title %}Oturum Başlat - StudyFlow{% endblock %}
+
+{% block content %}
+<h4 class="mb-4"><i class="bi bi-play-circle me-2"></i>Oturum Başlat</h4>
+
+{% if aktif_oturum %}
+<div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    <strong>{{ aktif_oturum.alan_adi }}</strong> alanında devam eden bir oturumunuz var.
+    <a href="{{ url_for('oturumlarim') }}" class="alert-link">Oturumlarıma git</a>
+</div>
+{% else %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Çalışma Alanı Seçin</span>
+                <small class="text-muted" id="sonucSayisi">{{ alanlar|length }} alan</small>
+            </div>
+            <div class="card-body">
+                <!-- Filtreler -->
+                <div class="row g-3 mb-4 pb-3 border-bottom">
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted">Arama</label>
+                        <input type="text" class="form-control" id="aramaInput" 
+                               placeholder="Alan adı veya konum ara...">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted">Konum</label>
+                        <select class="form-select" id="konumFiltre">
+                            <option value="">Tümü</option>
+                            {% set konumlar = [] %}
+                            {% for alan in alanlar %}
+                                {% if alan.konum not in konumlar %}
+                                    {% set _ = konumlar.append(alan.konum) %}
+                                    <option value="{{ alan.konum }}">{{ alan.konum }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted">Priz</label>
+                        <select class="form-select" id="prizFiltre">
+                            <option value="">Tümü</option>
+                            <option value="1">Var</option>
+                            <option value="0">Yok</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted">Sessiz Alan</label>
+                        <select class="form-select" id="sessizFiltre">
+                            <option value="">Tümü</option>
+                            <option value="1">Evet</option>
+                            <option value="0">Hayır</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <form method="POST" action="{{ url_for('oturum_baslat') }}" id="oturumForm">
+                    <div class="row g-3 mb-4" id="alanlarContainer">
+                        {% for alan in alanlar %}
+                        <div class="col-md-6 alan-item" 
+                             data-ad="{{ alan.alan_adi|lower }}" 
+                             data-konum="{{ alan.konum }}"
+                             data-priz="{{ '1' if alan.priz_var else '0' }}"
+                             data-sessiz="{{ '1' if alan.sessiz_alan else '0' }}">
+                            <div class="form-check card h-100">
+                                <div class="card-body">
+                                    <input class="form-check-input" type="radio" name="alan_id" 
+                                           id="alan_{{ alan.alan_id }}" value="{{ alan.alan_id }}" required>
+                                    <label class="form-check-label w-100" for="alan_{{ alan.alan_id }}">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <strong>{{ alan.alan_adi }}</strong>
+                                            <span class="badge bg-secondary">{{ alan.kapasite }} kişi</span>
+                                        </div>
+                                        <div class="text-muted small mt-1">{{ alan.tur_adi }}</div>
+                                        <div class="text-muted small">
+                                            <i class="bi bi-geo-alt"></i> {{ alan.konum }}
+                                        </div>
+                                        <div class="mt-2">
+                                            {% if alan.priz_var %}
+                                            <span class="badge bg-success bg-opacity-75 me-1">
+                                                <i class="bi bi-plug"></i> Priz
+                                            </span>
+                                            {% endif %}
+                                            {% if alan.sessiz_alan %}
+                                            <span class="badge bg-info bg-opacity-75">
+                                                <i class="bi bi-volume-mute"></i> Sessiz
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div id="noResult" class="text-center py-4 text-muted d-none">
+                        <i class="bi bi-search fs-1"></i>
+                        <p class="mt-2">Filtrelere uygun alan bulunamadı</p>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success btn-lg" id="baslatBtn">
+                            <i class="bi bi-play-fill me-2"></i>Oturumu Başlat
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-info-circle me-2"></i>Bilgi</div>
+            <div class="card-body">
+                <ul class="mb-0 ps-3">
+                    <li>Süreniz otomatik takip edilir</li>
+                    <li>İstediğiniz zaman bitirebilirsiniz</li>
+                    <li>Bitirirken verimlilik puanı verebilirsiniz</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const aramaInput = document.getElementById('aramaInput');
+    const konumFiltre = document.getElementById('konumFiltre');
+    const prizFiltre = document.getElementById('prizFiltre');
+    const sessizFiltre = document.getElementById('sessizFiltre');
+    const alanlar = document.querySelectorAll('.alan-item');
+    const sonucSayisi = document.getElementById('sonucSayisi');
+    const noResult = document.getElementById('noResult');
+    const baslatBtn = document.getElementById('baslatBtn');
+    
+    function filtrele() {
+        const arama = aramaInput.value.toLowerCase().trim();
+        const konum = konumFiltre.value;
+        const priz = prizFiltre.value;
+        const sessiz = sessizFiltre.value;
+        
+        let gorunenSayi = 0;
+        
+        alanlar.forEach(function(alan) {
+            const ad = alan.dataset.ad;
+            const alanKonum = alan.dataset.konum;
+            const alanPriz = alan.dataset.priz;
+            const alanSessiz = alan.dataset.sessiz;
+            
+            let goster = true;
+            
+            // Arama filtresi
+            if (arama && !ad.includes(arama) && !alanKonum.toLowerCase().includes(arama)) {
+                goster = false;
+            }
+            
+            // Konum filtresi
+            if (konum && alanKonum !== konum) {
+                goster = false;
+            }
+            
+            // Priz filtresi
+            if (priz && alanPriz !== priz) {
+                goster = false;
+            }
+            
+            // Sessiz filtresi
+            if (sessiz && alanSessiz !== sessiz) {
+                goster = false;
+            }
+            
+            if (goster) {
+                alan.classList.remove('d-none');
+                gorunenSayi++;
+            } else {
+                alan.classList.add('d-none');
+                // Gizlenen alanın radio'sunu temizle
+                alan.querySelector('input[type="radio"]').checked = false;
+            }
+        });
+        
+        sonucSayisi.textContent = gorunenSayi + ' alan';
+        
+        if (gorunenSayi === 0) {
+            noResult.classList.remove('d-none');
+            baslatBtn.disabled = true;
+        } else {
+            noResult.classList.add('d-none');
+            baslatBtn.disabled = false;
+        }
+    }
+    
+    // Event listeners - anlık filtreleme
+    aramaInput.addEventListener('input', filtrele);
+    konumFiltre.addEventListener('change', filtrele);
+    prizFiltre.addEventListener('change', filtrele);
+    sessizFiltre.addEventListener('change', filtrele);
+});
+</script>
+{% endblock %}

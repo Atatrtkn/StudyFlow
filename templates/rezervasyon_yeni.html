@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Yeni Rezervasyon - StudyFlow{% endblock %}
+
+{% block content %}
+<h4 class="mb-4"><i class="bi bi-calendar-plus me-2"></i>Yeni Rezervasyon</h4>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('yeni_rezervasyon') }}">
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label for="alan_id" class="form-label">Çalışma Alanı</label>
+                            <select class="form-select" id="alan_id" name="alan_id" required>
+                                <option value="">Seçin...</option>
+                                {% for alan in alanlar %}
+                                <option value="{{ alan.alan_id }}">
+                                    {{ alan.alan_adi }} - {{ alan.konum }} ({{ alan.tur_adi }}, {{ alan.kapasite }} kişi)
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="tarih" class="form-label">Tarih</label>
+                            <input type="date" class="form-control" id="tarih" name="tarih" required>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="baslangic_saat" class="form-label">Başlangıç Saati</label>
+                            <select class="form-select" id="baslangic_saat" name="baslangic_saat" required>
+                                {% for h in range(8, 21) %}
+                                <option value="{{ '%02d:00' % h }}">{{ '%02d:00' % h }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="bitis_saat" class="form-label">Bitiş Saati</label>
+                            <select class="form-select" id="bitis_saat" name="bitis_saat" required>
+                                {% for h in range(9, 22) %}
+                                <option value="{{ '%02d:00' % h }}">{{ '%02d:00' % h }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="notlar" class="form-label">Notlar (Opsiyonel)</label>
+                            <textarea class="form-control" id="notlar" name="notlar" rows="2" 
+                                      placeholder="Örn: Matematik çalışması"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-lg me-1"></i> Rezervasyon Oluştur
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-info-circle me-2"></i>Bilgi</div>
+            <div class="card-body">
+                <ul class="mb-0 ps-3">
+                    <li>Maksimum rezervasyon süresi 4 saattir</li>
+                    <li>Çakışan rezervasyon yapılamaz</li>
+                    <li>Rezervasyonlarınızı istediğiniz zaman iptal edebilirsiniz</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // URL parametrelerini al
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Alan ID
+    const alanId = urlParams.get('alan_id');
+    if (alanId) {
+        document.getElementById('alan_id').value = alanId;
+    }
+    
+    // Tarih
+    const tarih = urlParams.get('tarih');
+    if (tarih) {
+        document.getElementById('tarih').value = tarih;
+    } else {
+        // Bugünün tarihini varsayılan olarak ayarla
+        document.getElementById('tarih').valueAsDate = new Date();
+    }
+    
+    // Başlangıç saati
+    const baslangic = urlParams.get('baslangic');
+    if (baslangic) {
+        // "08:00:00" formatını "08:00" formatına çevir
+        const baslangicSaat = baslangic.substring(0, 5);
+        const baslangicSelect = document.getElementById('baslangic_saat');
+        for (let option of baslangicSelect.options) {
+            if (option.value === baslangicSaat) {
+                option.selected = true;
+                break;
+            }
+        }
+    }
+    
+    // Bitiş saati
+    const bitis = urlParams.get('bitis');
+    if (bitis) {
+        // "10:00:00" formatını "10:00" formatına çevir
+        const bitisSaat = bitis.substring(0, 5);
+        const bitisSelect = document.getElementById('bitis_saat');
+        for (let option of bitisSelect.options) {
+            if (option.value === bitisSaat) {
+                option.selected = true;
+                break;
+            }
+        }
+    }
+});
+</script>
+{% endblock %}
