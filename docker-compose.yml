@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16.11-alpine
+    container_name: studyflow-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: studyflow
+      POSTGRES_USER: ataturetken
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ataturetken"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - studyflow-network
+
+  web:
+    build: .
+    container_name: studyflow-app
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+      DB_NAME: studyflow
+      DB_USER: ataturetken
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_PORT: 5432
+      FLASK_SECRET_KEY: ${FLASK_SECRET_KEY}
+    ports:
+      - "5001:5001"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - studyflow-network
+
+volumes:
+  postgres_data:
+
+networks:
+  studyflow-network:
+    driver: bridge

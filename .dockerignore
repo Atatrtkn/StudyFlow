@@ -1,0 +1,14 @@
+.git
+.gitignore
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.env
+.env.example
+venv
+env
+.vscode
+.idea
+*.log
+setup-server.md
