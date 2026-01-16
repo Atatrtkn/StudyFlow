@@ -597,7 +597,7 @@ def arama_sonuc():
     cur.close()
     conn.close()
     
-    return render_template('arama_sonuc.html', sonuclar=sonuclar, query=query, 
+    return render_template('arama_sonuc.html', sonuclar=sonuclar, query=query,
                          tarih=tarih, baslangic_saat=baslangic_saat, bitis_saat=bitis_saat)
 
 @app.route('/istatistikler')

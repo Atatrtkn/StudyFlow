@@ -11,21 +11,23 @@
 </div>
 
 <p class="text-muted mb-3">
-    "{{ sorgu }}" için {{ sonuclar|length }} sonuç bulundu
+    {% if query %}"{{ query }}" için {% endif %}
+    {% if tarih %}{{ tarih }} tarihinde {{ baslangic_saat }}-{{ bitis_saat }} saatleri için {% endif %}
+    {{ sonuclar|length }} sonuç bulundu
 </p>
 
 {% if sonuclar %}
 <div class="card">
     <div class="table-responsive">
         <table class="table table-hover mb-0">
-            {% if arama_tipi == 'alan' %}
             <thead>
                 <tr>
                     <th>Alan Adı</th>
                     <th>Tür</th>
                     <th>Konum</th>
                     <th>Kapasite</th>
-                    <th>Durum</th>
+                    <th>Özellikler</th>
+                    <th>İşlem</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,66 +38,22 @@
                     <td>{{ s.konum }}</td>
                     <td>{{ s.kapasite }} kişi</td>
                     <td>
-                        {% if s.aktif %}
-                        <span class="badge bg-success">Aktif</span>
-                        {% else %}
-                        <span class="badge bg-secondary">Pasif</span>
+                        {% if s.priz_var %}
+                        <span class="badge bg-info me-1"><i class="bi bi-plug"></i> Priz</span>
+                        {% endif %}
+                        {% if s.sessiz_alan %}
+                        <span class="badge bg-secondary"><i class="bi bi-volume-mute"></i> Sessiz</span>
                         {% endif %}
                     </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-            
-            {% elif arama_tipi == 'rezervasyon' %}
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Kullanıcı</th>
-                    <th>Alan</th>
-                    <th>Tarih</th>
-                    <th>Durum</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for s in sonuclar %}
-                <tr>
-                    <td>#{{ s.rezervasyon_id }}</td>
-                    <td>{{ s.kullanici_adi }}</td>
-                    <td>{{ s.alan_adi }}</td>
-                    <td>{{ s.baslangic_zamani.strftime('%d.%m.%Y %H:%M') }}</td>
                     <td>
-                        <span class="badge bg-{{ 'success' if s.durum == 'aktif' else 'danger' if s.durum == 'iptal' else 'secondary' }}">
-                            {{ s.durum|capitalize }}
-                        </span>
+                        <a href="{{ url_for('yeni_rezervasyon') }}?alan_id={{ s.alan_id }}{% if tarih %}&tarih={{ tarih }}&baslangic_saat={{ baslangic_saat }}&bitis_saat={{ bitis_saat }}{% endif %}" 
+                           class="btn btn-sm btn-primary">
+                            <i class="bi bi-calendar-plus"></i> Rezerve Et
+                        </a>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
-            
-            {% elif arama_tipi == 'kullanici' %}
-            <thead>
-                <tr>
-                    <th>Öğrenci No</th>
-                    <th>Ad Soyad</th>
-                    <th>Email</th>
-                    <th>Rol</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for s in sonuclar %}
-                <tr>
-                    <td><strong>{{ s.ogrenci_no }}</strong></td>
-                    <td>{{ s.ad }} {{ s.soyad }}</td>
-                    <td>{{ s.email }}</td>
-                    <td>
-                        <span class="badge bg-{{ 'warning' if s.rol == 'admin' else 'info' }}">
-                            {{ s.rol|capitalize }}
-                        </span>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-            {% endif %}
         </table>
     </div>
 </div>
