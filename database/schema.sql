@@ -113,18 +113,18 @@ INSERT INTO alan_turleri (tur_adi, aciklama, max_kapasite, saatlik_limit) VALUES
 ('Çok Amaçlı Alan', 'Esnek kullanımlı alan', 15, 3);
 
 INSERT INTO kullanicilar (ogrenci_no, ad, soyad, email, sifre, telefon, rol, toplam_calisma_suresi) VALUES
-('ADMIN001', 'Sistem', 'Yönetici', 'admin@studyflow.edu.tr', 'admin123', '5551234567', 'admin', 0),
-('ADMIN002', 'Kütüphane', 'Sorumlusu', 'kutuphane@studyflow.edu.tr', 'lib123', '5551234568', 'admin', 0),
-('20210001', 'Ahmet', 'Yılmaz', 'ahmet.yilmaz@ogrenci.edu.tr', 'sifre123', '5321112233', 'ogrenci', 1250),
-('20210002', 'Ayşe', 'Kaya', 'ayse.kaya@ogrenci.edu.tr', 'sifre123', '5322223344', 'ogrenci', 890),
-('20210003', 'Mehmet', 'Demir', 'mehmet.demir@ogrenci.edu.tr', 'sifre123', '5323334455', 'ogrenci', 2100),
-('20210004', 'Fatma', 'Çelik', 'fatma.celik@ogrenci.edu.tr', 'sifre123', '5324445566', 'ogrenci', 1560),
-('20210005', 'Ali', 'Öztürk', 'ali.ozturk@ogrenci.edu.tr', 'sifre123', '5325556677', 'ogrenci', 720),
-('20210006', 'Zeynep', 'Arslan', 'zeynep.arslan@ogrenci.edu.tr', 'sifre123', '5326667788', 'ogrenci', 1890),
-('20210007', 'Mustafa', 'Şahin', 'mustafa.sahin@ogrenci.edu.tr', 'sifre123', '5327778899', 'ogrenci', 450),
-('20210008', 'Elif', 'Yıldız', 'elif.yildiz@ogrenci.edu.tr', 'sifre123', '5328889900', 'ogrenci', 2340),
-('20210009', 'Emre', 'Aydın', 'emre.aydin@ogrenci.edu.tr', 'sifre123', '5329990011', 'ogrenci', 1100),
-('20210010', 'Selin', 'Koç', 'selin.koc@ogrenci.edu.tr', 'sifre123', '5320001122', 'ogrenci', 1780);
+('ADMIN001', 'Sistem', 'Yönetici', 'admin@std.yildiz.edu.tr', 'admin123', '5551234567', 'admin', 0),
+('ADMIN002', 'Kütüphane', 'Sorumlusu', 'kutuphane@std.yildiz.edu.tr', 'lib123', '5551234568', 'admin', 0),
+('20210001', 'Ahmet', 'Yılmaz', 'ahmet.yilmaz@std.yildiz.edu.tr', 'sifre123', '5321112233', 'ogrenci', 1250),
+('20210002', 'Ayşe', 'Kaya', 'ayse.kaya@std.yildiz.edu.tr', 'sifre123', '5322223344', 'ogrenci', 890),
+('20210003', 'Mehmet', 'Demir', 'mehmet.demir@std.yildiz.edu.tr', 'sifre123', '5323334455', 'ogrenci', 2100),
+('20210004', 'Fatma', 'Çelik', 'fatma.celik@std.yildiz.edu.tr', 'sifre123', '5324445566', 'ogrenci', 1560),
+('20210005', 'Ali', 'Öztürk', 'ali.ozturk@std.yildiz.edu.tr', 'sifre123', '5325556677', 'ogrenci', 720),
+('20210006', 'Zeynep', 'Arslan', 'zeynep.arslan@std.yildiz.edu.tr', 'sifre123', '5326667788', 'ogrenci', 1890),
+('20210007', 'Mustafa', 'Şahin', 'mustafa.sahin@std.yildiz.edu.tr', 'sifre123', '5327778899', 'ogrenci', 450),
+('20210008', 'Elif', 'Yıldız', 'elif.yildiz@std.yildiz.edu.tr', 'sifre123', '5328889900', 'ogrenci', 2340),
+('20210009', 'Emre', 'Aydın', 'emre.aydin@std.yildiz.edu.tr', 'sifre123', '5329990011', 'ogrenci', 1100),
+('20210010', 'Selin', 'Koç', 'selin.koc@std.yildiz.edu.tr', 'sifre123', '5320001122', 'ogrenci', 1780);
 
 INSERT INTO calisma_alanlari (alan_adi, tur_id, konum, kapasite, priz_var, sessiz_alan) VALUES
 ('Masa A1', 1, 'Merkez Kütüphane - Zemin Kat', 1, TRUE, FALSE),
