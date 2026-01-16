@@ -507,20 +507,15 @@ def rezervasyon_guncelle(rez_id):
     cur = conn.cursor()
     
     if request.method == 'POST':
-        tarih = request.form['tarih']
-        baslangic_saat = request.form['baslangic_saat']
-        bitis_saat = request.form['bitis_saat']
+        durum = request.form['durum']
         notlar = request.form.get('notlar', '')
-        
-        baslangic = f"{tarih} {baslangic_saat}:00"
-        bitis = f"{tarih} {bitis_saat}:00"
         
         try:
             cur.execute("""
                 UPDATE rezervasyonlar 
-                SET baslangic_zamani = %s, bitis_zamani = %s, notlar = %s
+                SET durum = %s, notlar = %s
                 WHERE rezervasyon_id = %s AND kullanici_id = %s
-            """, (baslangic, bitis, notlar, rez_id, session['user_id']))
+            """, (durum, notlar, rez_id, session['user_id']))
             conn.commit()
             flash('Rezervasyon güncellendi!', 'success')
             return redirect(url_for('rezervasyonlarim'))
@@ -529,7 +524,7 @@ def rezervasyon_guncelle(rez_id):
             flash(f'Hata: {str(e)}', 'danger')
     
     cur.execute("""
-        SELECT r.*, ca.alan_adi
+        SELECT r.*, ca.alan_adi, ca.konum
         FROM rezervasyonlar r
         JOIN calisma_alanlari ca ON r.alan_id = ca.alan_id
         WHERE r.rezervasyon_id = %s AND r.kullanici_id = %s

@@ -21,7 +21,7 @@
                     <strong>Saat:</strong> {{ rezervasyon.baslangic_zamani.strftime('%H:%M') }} - {{ rezervasyon.bitis_zamani.strftime('%H:%M') }}
                 </div>
                 
-                <form method="POST" action="{{ url_for('rezervasyon_guncelle', rezervasyon_id=rezervasyon.rezervasyon_id) }}">
+                <form method="POST" action="{{ url_for('rezervasyon_guncelle', rez_id=rezervasyon.rezervasyon_id) }}">
                     <div class="mb-3">
                         <label for="durum" class="form-label">Durum</label>
                         <select class="form-select" id="durum" name="durum">
