@@ -413,7 +413,7 @@ def yeni_rezervasyon():
         rez_sayisi = mevcut_rez['rez_sayisi'] if mevcut_rez else 0
         
         if rez_sayisi >= kapasite:
-            flash(f'Bu alan seçilen saatlerde dolu! (Kapasite: {kapasite}, Mevcut rezervasyon: {rez_sayisi})', 'danger')
+            flash(f'Bu alan seçilen saatlerde dolu! (Kapasite: {kapasite}, Mevcut   syon: {rez_sayisi})', 'danger')
             cur.execute("""
                 SELECT ca.*, at.tur_adi 
                 FROM calisma_alanlari ca 
@@ -556,39 +556,49 @@ def arama_sonuc():
     query = request.args.get('q', '')
     tur = request.args.get('tur', '')
     konum = request.args.get('konum', '')
+    tarih = request.args.get('tarih', '')
+    baslangic_saat = request.args.get('baslangic_saat', '')
+    bitis_saat = request.args.get('bitis_saat', '')
     
     conn = get_db_connection()
     cur = conn.cursor()
     
-    sql = """
-        SELECT ca.*, at.tur_adi 
-        FROM calisma_alanlari ca 
-        JOIN alan_turleri at ON ca.tur_id = at.tur_id
-        WHERE ca.aktif = TRUE
-    """
-    params = []
-    
-    if query:
-        sql += " AND (LOWER(ca.alan_adi) LIKE LOWER(%s) OR LOWER(ca.konum) LIKE LOWER(%s))"
-        params.extend([f'%{query}%', f'%{query}%'])
-    
-    if tur:
-        sql += " AND at.tur_adi = %s"
-        params.append(tur)
-    
-    if konum:
-        sql += " AND ca.konum = %s"
-        params.append(konum)
-    
-    sql += " ORDER BY ca.konum, ca.alan_adi"
-    
-    cur.execute(sql, params)
-    sonuclar = cur.fetchall()
+    if tarih and baslangic_saat and bitis_saat:
+        cur.execute("""
+            SELECT * FROM fn_musait_alanlar(%s::DATE, %s::TIME, %s::TIME)
+        """, (tarih, baslangic_saat, bitis_saat))
+        sonuclar = cur.fetchall()
+    else:
+        sql = """
+            SELECT ca.*, at.tur_adi 
+            FROM calisma_alanlari ca 
+            JOIN alan_turleri at ON ca.tur_id = at.tur_id
+            WHERE ca.aktif = TRUE
+        """
+        params = []
+        
+        if query:
+            sql += " AND (LOWER(ca.alan_adi) LIKE LOWER(%s) OR LOWER(ca.konum) LIKE LOWER(%s))"
+            params.extend([f'%{query}%', f'%{query}%'])
+        
+        if tur:
+            sql += " AND at.tur_adi = %s"
+            params.append(tur)
+        
+        if konum:
+            sql += " AND ca.konum = %s"
+            params.append(konum)
+        
+        sql += " ORDER BY ca.konum, ca.alan_adi"
+        
+        cur.execute(sql, params)
+        sonuclar = cur.fetchall()
     
     cur.close()
     conn.close()
     
-    return render_template('arama_sonuc.html', sonuclar=sonuclar, query=query)
+    return render_template('arama_sonuc.html', sonuclar=sonuclar, query=query, 
+                         tarih=tarih, baslangic_saat=baslangic_saat, bitis_saat=bitis_saat)
 
 @app.route('/istatistikler')
 @login_required

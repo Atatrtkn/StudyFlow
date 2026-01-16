@@ -1,32 +1,54 @@
 {% extends 'base.html' %}
 
-{% block title %}Arama - StudyFlow{% endblock %}
+{% block title %}Alan Ara - StudyFlow{% endblock %}
 
 {% block content %}
-<h4 class="mb-4"><i class="bi bi-search me-2"></i>Arama</h4>
+<h4 class="mb-4"><i class="bi bi-search me-2"></i>Alan Ara</h4>
 
 <div class="card">
     <div class="card-body">
         <form method="GET" action="{{ url_for('arama_sonuc') }}">
             <div class="row g-3">
+                <div class="col-md-12">
+                    <label class="form-label">Arama</label>
+                    <input type="text" class="form-control" name="q" placeholder="Alan adı veya konum...">
+                </div>
+                
+                <div class="col-12">
+                    <hr>
+                    <h6><i class="bi bi-clock me-1"></i> Müsaitlik Filtresi (Opsiyonel)</h6>
+                    <small class="text-muted">Belirli bir zaman diliminde müsait alanları bulmak için doldurun</small>
+                </div>
+                
                 <div class="col-md-4">
-                    <label for="tip" class="form-label">Arama Tipi</label>
-                    <select class="form-select" id="tip" name="tip">
-                        <option value="alan">Çalışma Alanı</option>
-                        <option value="rezervasyon">Rezervasyon</option>
-                        <option value="kullanici">Kullanıcı</option>
+                    <label class="form-label">Tarih</label>
+                    <input type="date" class="form-control" name="tarih">
+                </div>
+                
+                <div class="col-md-4">
+                    <label class="form-label">Başlangıç Saati</label>
+                    <select class="form-select" name="baslangic_saat">
+                        <option value="">Seçin...</option>
+                        {% for h in range(8, 21) %}
+                        <option value="{{ '%02d:00' % h }}">{{ '%02d:00' % h }}</option>
+                        {% endfor %}
                     </select>
                 </div>
-                <div class="col-md-8">
-                    <label for="q" class="form-label">Arama Terimi</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="q" name="q" 
-                               placeholder="Ara..." required>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-search"></i> Ara
-                        </button>
-                    </div>
+                
+                <div class="col-md-4">
+                    <label class="form-label">Bitiş Saati</label>
+                    <select class="form-select" name="bitis_saat">
+                        <option value="">Seçin...</option>
+                        {% for h in range(9, 22) %}
+                        <option value="{{ '%02d:00' % h }}">{{ '%02d:00' % h }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
+            </div>
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search me-1"></i> Ara
+                </button>
             </div>
         </form>
     </div>
